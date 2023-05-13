@@ -1,0 +1,12 @@
+[
+    {
+        "game":"gamesrasa",
+        "savePath":"save_path",
+        "backupPath":"backup_path"
+    },
+    {
+        "game":"gamesa",
+        "savePath":"save_path",
+        "backupPath":"backup_path"
+    }
+]
