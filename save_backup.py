@@ -1,3 +1,9 @@
+# import os to check file size
+# import sys to exit script
+# import shutil to copy and rm files
+# import argparse for parser
+# import datetime for naming backups
+# import json for saving game entries
 import os
 import sys
 import shutil
@@ -94,11 +100,12 @@ def remove(delFiles):
          if(x == location):
             locations.remove(x)
     #write()
-    #add option to delete all back ups for a game
-    if(delFiles):
-        #delete all backup files for game name
-        print()
     print("Removed entry for " + game + " with save path " + location["savePath"] + " and backup path " + location["backupPath"])
+    #add option to delete all back ups for a game
+    if(delFiles==True):
+        #delete all backup files for game name
+        print("Removed all files for " + game + " from " + location["backupPath"])
+
 
 def locate():
     location = next((item for item in locations if item["game"] == game), False)
@@ -139,16 +146,17 @@ def parse_args():
     a_parser.add_argument('backup', help = 'backup path')
     
     c_parser = subparsers.add_parser("change", help = 'change existing game paths')
-    #c_parser.add_argument('name')
-    c_parser.add_argument('--savepath')
-    c_parser.add_argument('--backup')
+    c_parser.add_argument('name')
+    c_parser.add_argument('-sp','--savepath')
+    c_parser.add_argument('-bp','--backup')
     
     s_parser = subparsers.add_parser("save", help = 'backup save game')
+    s_parser.add_argument('-t', '--title', help = 'name backup folder differently')
     
     l_parser = subparsers.add_parser("load", help = 'restore backup to save games')
     
     r_parser = subparsers.add_parser("remove", help = 'remove game path')
-    r_parser = subparsers.add_argument('-f', action= "store_true",help = 'delete all backups')
+    r_parser.add_argument('-f', '--files', action= "store_true",help = 'delete all backups')
     
     return parser.parse_args()
 
