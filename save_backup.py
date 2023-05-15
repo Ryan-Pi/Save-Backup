@@ -16,16 +16,19 @@ def main():
     global save_path
     global backup_path
     global locations
+    global empty
     locations = []
     
     #open json file containing game save paths
     with open(JSON_NAME, "r") as file:
         if(os.stat(JSON_PATH).st_size == 0): 
             #no json
+            empty = True
             print("No existing game paths set up!")
             file.close()
         else:
         # load json file
+            empty = False
             locations = json.load(file)
             file.close()
     args = parse_args()
