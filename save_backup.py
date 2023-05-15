@@ -12,6 +12,7 @@ JSON_PATH = os.getcwd() + "\\" + JSON_NAME
 
 def main():
     
+    global game
     global save_path
     global backup_path
     global locations
@@ -28,10 +29,10 @@ def main():
             locations = json.load(file)
             file.close()
     args = parse_args()
+    game = args.name
     if(args.list):
         list()
         #sys.exit()
-    game = args.name
     if args.subcommand == 'add':
         save_path = args.savepath
         backup_path = args.backup
@@ -52,7 +53,7 @@ def main():
     
     
 
-def add(game):
+def add():
     #use Tuple to save game name, save path, backup path?
     #need to check for duplicate game names!
     if(next((item for item in locations if item["game"] == game), False)):
@@ -81,7 +82,7 @@ def change():
     #check that at least one is being changed
     print("change not implemented yet")
     
-def remove(game):
+def remove():
     #remove an entry
     location = next((item for item in locations if item["game"] == game), True)
     if(location):
@@ -99,11 +100,11 @@ def write():
         json.dump(locations, file, indent=4, separators=(',',':'))
         file.close()
     
-def save(game):
+def save():
     
     print("Saved " + game + " to " + backup_path)
      
-def load(game):
+def load():
     #
     print("load not implemented")
     
