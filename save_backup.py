@@ -24,7 +24,7 @@ def main():
             print("No existing game paths set up!")
             file.close()
         else:
-        # print all existing games and paths
+        # load json file
             locations = json.load(file)
             file.close()
     args = parse_args()
@@ -32,7 +32,6 @@ def main():
         list()
         #sys.exit()
     game = args.name
-    print(game)
     if args.subcommand == 'add':
         save_path = args.savepath
         backup_path = args.backup
@@ -70,14 +69,9 @@ def add(game):
         "savePath": save_path,
         "backupPath": backup_path
     }
-    with open(JSON_NAME, "r+") as file:
-        #locations.append(new_json)
-        #file.seek(0)
-        #json.dump(locations, file, indent=4, separators=(',',':'))
-        file.close()
-    #save(game)
-    #print("All  games in json file below:")
-    #list()
+    locations.append(new_json)
+    write()
+    list()
 
 def change():
     # figure out how to lookup and change
@@ -89,8 +83,21 @@ def change():
     
 def remove(game):
     #remove an entry
-    if(next((item for item in locations if item["game"] == game), True)):
+    location = next((item for item in locations if item["game"] == game), True)
+    if(location):
         sys.exit(game + " path does not exist!")
+    for x in locations:
+         if(x == location):
+            locations.remove(x)
+    write()
+    print("Removed entry for " + game + " with save path " + save_path + " and backup path " + backup_path)
+
+def write():
+    #fill this with open as file, 
+    with open(JSON_NAME, "r+") as file:
+        file.seek(0)
+        json.dump(locations, file, indent=4, separators=(',',':'))
+        file.close()
     
 def save(game):
     
@@ -119,10 +126,9 @@ def parse_args():
     a_parser.add_argument('backup', help = 'backup path')
     
     c_parser = subparsers.add_parser("change", help = 'change existing game paths')
-    c_parser.add_argument('name')
-    c_parser.add_argument('savepath')
-    c_parser.add_argument('backup')
-    #c_parser.add_argument('')
+    #c_parser.add_argument('name')
+    c_parser.add_argument('--savepath')
+    c_parser.add_argument('--backup')
     
     s_parser = subparsers.add_parser("save", help = 'backup save game')
     
