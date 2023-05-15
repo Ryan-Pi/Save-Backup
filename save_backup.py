@@ -39,15 +39,15 @@ def main():
     if args.subcommand == 'add':
         save_path = args.savepath
         backup_path = args.backup
-        print(save_path)
-        print(backup_path)
-        add(game)
+        add()
     elif args.subcommand == 'change':
-        change(game)
+        change()
     elif args.subcommand == 'save':
-        save(game)
+        save()
     elif args.subcommand == 'load':
-        load(game)
+        load()
+    elif args.subcommand == 'remove':
+        remove(args.files)
     # path to find saves
     # path to backup saves
     # command to list games, with path settings saved?
@@ -85,16 +85,24 @@ def change():
     #check that at least one is being changed
     print("change not implemented yet")
     
-def remove():
+def remove(delFiles):
     #remove an entry
-    location = next((item for item in locations if item["game"] == game), True)
-    if(location):
-        sys.exit(game + " path does not exist!")
+    location = locate()
+    if(location == False):
+        sys.exit(game + " entry does not exist!")
     for x in locations:
          if(x == location):
             locations.remove(x)
-    write()
-    print("Removed entry for " + game + " with save path " + save_path + " and backup path " + backup_path)
+    #write()
+    #add option to delete all back ups for a game
+    if(delFiles):
+        #delete all backup files for game name
+        print()
+    print("Removed entry for " + game + " with save path " + location["savePath"] + " and backup path " + location["backupPath"])
+
+def locate():
+    location = next((item for item in locations if item["game"] == game), False)
+    return location
 
 def write():
     #fill this with open as file, 
@@ -104,11 +112,12 @@ def write():
         file.close()
     
 def save():
-    
+    #create a folder in specified directory, named game name + date time saved
     print("Saved " + game + " to " + backup_path)
      
 def load():
-    #
+    #take files in saved
+    #way to select which backup to load
     print("load not implemented")
     
 def list():
@@ -139,6 +148,7 @@ def parse_args():
     l_parser = subparsers.add_parser("load", help = 'restore backup to save games')
     
     r_parser = subparsers.add_parser("remove", help = 'remove game path')
+    r_parser = subparsers.add_argument('-f', action= "store_true",help = 'delete all backups')
     
     return parser.parse_args()
 
