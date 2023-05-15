@@ -15,11 +15,6 @@
         "backupPath":"testbu"
     },
     {
-        "game":"testgame3",
-        "savePath":"testsave",
-        "backupPath":"testbu"
-    },
-    {
         "game":"testgame33",
         "savePath":"testsave",
         "backupPath":"testbu"

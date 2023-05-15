@@ -26,9 +26,11 @@ def main():
         else:
         # print all existing games and paths
             locations = json.load(file)
-            list()
             file.close()
     args = parse_args()
+    if(args.list):
+        list()
+        #sys.exit()
     game = args.name
     print(game)
     if args.subcommand == 'add':
@@ -54,14 +56,13 @@ def main():
 def add(game):
     #use Tuple to save game name, save path, backup path?
     #need to check for duplicate game names!
-    
+    if(next((item for item in locations if item["game"] == game), False)):
+        sys.exit(game + " path already exists!")
     #check paths are valid
-    if os.path.exists(save_path)==False:
-        #sys.exit("save path not valid")
-        print("save not valid")
+    if (os.path.exists(save_path)==False):
+        sys.exit("save path not valid")
     elif(os.path.exists(backup_path)==False):
-        #sys.exit("backup path not valid")
-        print("backup not valid")
+        sys.exit("backup path not valid")
     else:
         print("All paths valid!")
     new_json = {
@@ -70,9 +71,9 @@ def add(game):
         "backupPath": backup_path
     }
     with open(JSON_NAME, "r+") as file:
-        locations.append(new_json)
+        #locations.append(new_json)
         #file.seek(0)
-        json.dump(locations, file, indent=4, separators=(',',':'))
+        #json.dump(locations, file, indent=4, separators=(',',':'))
         file.close()
     #save(game)
     #print("All  games in json file below:")
@@ -86,6 +87,11 @@ def change():
     #check that at least one is being changed
     print("change not implemented yet")
     
+def remove(game):
+    #remove an entry
+    if(next((item for item in locations if item["game"] == game), True)):
+        sys.exit(game + " path does not exist!")
+    
 def save(game):
     
     print("Saved " + game + " to " + backup_path)
@@ -96,12 +102,15 @@ def load(game):
     
 def list():
     #list games with defined paths
-    print("Existing game paths found!")
+    print("Listing existing game paths")
+    for item in locations:
+        print(item)
 
 def parse_args():
     parser = argparse.ArgumentParser(description = 'Script to backup save games to another location')
     
-    parser.add_argument('name', help = "name of game to be saved")
+    parser.add_argument('name',nargs = '?', help = "name of game to be saved")
+    parser.add_argument('-l', '--list', action="store_true", help = "list all saved game paths")
     
     subparsers = parser.add_subparsers(title ='subcommands', help = 'add, change, save, load', dest='subcommand')
     
@@ -111,21 +120,15 @@ def parse_args():
     
     c_parser = subparsers.add_parser("change", help = 'change existing game paths')
     c_parser.add_argument('name')
-    #c_parser.add_argument('')
-    #c_parser.add_argument('')
+    c_parser.add_argument('savepath')
+    c_parser.add_argument('backup')
     #c_parser.add_argument('')
     
     s_parser = subparsers.add_parser("save", help = 'backup save game')
-    s_parser.add_argument('name', help = 'game name')
     
     l_parser = subparsers.add_parser("load", help = 'restore backup to save games')
-    l_parser.add_argument('name', help = 'game name')
     
-    # parser.add_argument('-c', '--change', help = 'change existing game save paths')
-    
-    # parser.add_argument('-s', '--save', help = 'backup existing game saves')
-    
-    # parser.add_argument('-l', '--load', help = 'load existing backup to game')
+    r_parser = subparsers.add_parser("remove", help = 'remove game path')
     
     return parser.parse_args()
 
