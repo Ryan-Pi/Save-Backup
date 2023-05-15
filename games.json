@@ -1,12 +1,27 @@
 [
     {
-        "game":"gamesrasa",
-        "savePath":"save_path",
-        "backupPath":"backup_path"
+        "game":"testgame2",
+        "savePath":"testsave",
+        "backupPath":"testbu"
     },
     {
-        "game":"gamesa",
-        "savePath":"save_path",
-        "backupPath":"backup_path"
+        "game":"testgame",
+        "savePath":"testsave",
+        "backupPath":"testbu"
+    },
+    {
+        "game":"testgame3",
+        "savePath":"testsave",
+        "backupPath":"testbu"
+    },
+    {
+        "game":"testgame3",
+        "savePath":"testsave",
+        "backupPath":"testbu"
+    },
+    {
+        "game":"testgame33",
+        "savePath":"testsave",
+        "backupPath":"testbu"
     }
 ]
