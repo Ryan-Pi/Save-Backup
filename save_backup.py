@@ -47,7 +47,10 @@ def main():
         backup_path = args.backup
         add()
     elif args.subcommand == 'change':
-        change()
+        if(args.changename != None or args.savepath != None or args.backup != None):
+            change(args.changename, args.savepath, args.backup)
+        else:
+            sys.exit("No change specified! Exiting...")
     elif args.subcommand == 'save':
         save()
     elif args.subcommand == 'load':
@@ -81,15 +84,41 @@ def add():
     }
     locations.append(new_json)
     write()
+    print(game + " added successfully!")
     list()
 
-def change():
-    # figure out how to lookup and change
-    # game
+def change(name, save, back):
+    #add flag to move previous backups to new directory
+    # remove old one, add new one
+    # python makes shallow copies, so modifying location
+    # will change the dict in locations list
+    location = locate()
+    if(location == False):
+        #exit if no such game has been saved 
+        sys.exit(game + " has not been added!")
     # optional path
+    if(name != None):
+        newName = locate(name)
+        if(newName == False):
+            #checks if an entry for the proposed name change already exists
+            location["game"] = name
+        else:
+            sys.exit(name + " has already been configured with save path " + newName["savePath"] + " and backup path " + newName["backupPath"])
+    if(save != None):
+        if(os.path.exists(save)==False):
+            # exit if save path is not valid
+            sys.exit("save path not valid")
+        location["savePath"] = save
+    if(back != None):
+        if(os.path.exists(back)==False):
+            # exit if backup path is not valid
+            sys.exit("backup path not valid")
+        location["backupPath"] = back
     # optional backup change
     #check that at least one is being changed
-    print("change not implemented yet")
+    write()
+    print("Change successful!")
+    list()
     
 def remove(delFiles):
     #remove an entry
@@ -107,8 +136,13 @@ def remove(delFiles):
         print("Removed all files for " + game + " from " + location["backupPath"])
 
 
-def locate():
-    location = next((item for item in locations if item["game"] == game), False)
+def locate(name = None):
+    #one way of method overloading
+    #there is a overload module
+    if(name == None):
+        location = next((item for item in locations if item["game"] == game), False)
+    else:
+        location = next((item for item in locations if item["game"] == name), False)
     return location
 
 def write():
@@ -146,7 +180,7 @@ def parse_args():
     a_parser.add_argument('backup', help = 'backup path')
     
     c_parser = subparsers.add_parser("change", help = 'change existing game paths')
-    c_parser.add_argument('name')
+    c_parser.add_argument('-cn', '--changename')
     c_parser.add_argument('-sp','--savepath')
     c_parser.add_argument('-bp','--backup')
     
