@@ -150,22 +150,45 @@ def write():
         file.seek(0)
         json.dump(locations, file, indent=4, separators=(',',':'))
         file.close()
+        
+def check():
+    location = locate()
+    if(location == False):
+        sys.exit(f'{game} paths have not been configured! Exiting...')
+    save_path = location["savePath"]
+    backup_path = location["backupPath"]
     
 def save():
     #create a folder in specified directory, named game name + date time saved
+    #check()
     location = locate()
     if(location == False):
-        sys.exit(f'{game} has not been configured! Exiting...')
+        sys.exit(f'{game} paths have not been configured! Exiting...')
     save_path = location["savePath"]
     backup_path = location["backupPath"]
-    folder_name = f'{game}-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}'
-    print(f'Saved {game} at {save_path} to {backup_path} in {folder_name}')
+    folder_name = f'{game}-{datetime.now().strftime("%d-%m-%Y")}'
+    backup = f'{backup_path}/{folder_name}'
+    move(save_path, backup)
+    print(f'Saved {game} at {save_path} to {backup_path} in {folder_name}!')
      
 def load():
-    #take files in saved
+    #take files in saved0
     #way to select which backup to load
     print("load not implemented")
     
+def move(save, folder):
+    print(save)
+    if(os.path.exists(folder)):
+        overwrite = input(f'{game} already has a backup on this date? Overwrite (y/n)?')
+        if(overwrite.lower()=='y'):
+            shutil.rmtree(folder)
+            shutil.copytree(save, folder)
+        else:
+            sys.exit("Backup aborted!")
+    else:
+        shutil.copytree(save, folder)
+        
+            
 def list():
     #list games with defined paths
     print("Listing existing game paths")
