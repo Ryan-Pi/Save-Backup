@@ -8,7 +8,7 @@ import os
 import sys
 import shutil
 import argparse
-import datetime
+from datetime import datetime
 import json
 
 # python script with json file that saves game paths
@@ -39,9 +39,6 @@ def main():
             file.close()
     args = parse_args()
     game = args.name
-    if(args.list):
-        list()
-        #sys.exit()
     if args.subcommand == 'add':
         save_path = args.savepath
         backup_path = args.backup
@@ -57,6 +54,8 @@ def main():
         load()
     elif args.subcommand == 'remove':
         remove(args.files)
+    if(args.list):
+        list()
     # path to find saves
     # path to backup saves
     # command to list games, with path settings saved?
@@ -69,7 +68,7 @@ def add():
     #use Tuple to save game name, save path, backup path?
     #need to check for duplicate game names!
     if(next((item for item in locations if item["game"] == game), False)):
-        sys.exit(game + " path already exists!")
+        sys.exit(f'{game} already exists!')
     #check paths are valid
     if (os.path.exists(save_path)==False):
         sys.exit("save path not valid")
@@ -84,7 +83,7 @@ def add():
     }
     locations.append(new_json)
     write()
-    print(game + " added successfully!")
+    print(f'{game} added successfully!')
     list()
 
 def change(name, save, back):
@@ -95,7 +94,7 @@ def change(name, save, back):
     location = locate()
     if(location == False):
         #exit if no such game has been saved 
-        sys.exit(game + " has not been added!")
+        sys.exit(f'{game} has not been added!')
     # optional path
     if(name != None):
         newName = locate(name)
@@ -103,7 +102,7 @@ def change(name, save, back):
             #checks if an entry for the proposed name change already exists
             location["game"] = name
         else:
-            sys.exit(name + " has already been configured with save path " + newName["savePath"] + " and backup path " + newName["backupPath"])
+            sys.exit(f'{name} has already been configured with save path {newName["savePath"]} and backup path {newName["backupPath"]}')
     if(save != None):
         if(os.path.exists(save)==False):
             # exit if save path is not valid
@@ -124,16 +123,16 @@ def remove(delFiles):
     #remove an entry
     location = locate()
     if(location == False):
-        sys.exit(game + " entry does not exist!")
+        sys.exit(f'{game} entry does not exist!')
     for x in locations:
          if(x == location):
             locations.remove(x)
     #write()
-    print("Removed entry for " + game + " with save path " + location["savePath"] + " and backup path " + location["backupPath"])
+    print(f'"Removed entry for {game} with save path {location["savePath"]} and backup path {location["backupPath"]}')
     #add option to delete all back ups for a game
     if(delFiles==True):
         #delete all backup files for game name
-        print("Removed all files for " + game + " from " + location["backupPath"])
+        print(f'Removed all files for {game} from {location["backupPath"]}')
 
 
 def locate(name = None):
@@ -154,7 +153,13 @@ def write():
     
 def save():
     #create a folder in specified directory, named game name + date time saved
-    print("Saved " + game + " to " + backup_path)
+    location = locate()
+    if(location == False):
+        sys.exit(f'{game} has not been configured! Exiting...')
+    save_path = location["savePath"]
+    backup_path = location["backupPath"]
+    folder_name = f'{game}-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}'
+    print(f'Saved {game} at {save_path} to {backup_path} in {folder_name}')
      
 def load():
     #take files in saved
