@@ -16,6 +16,7 @@ import json
 JSON_NAME = "games.json"
 JSON_PATH = os.getcwd() + "\\" + JSON_NAME
 
+
 def main():
     
     global game
@@ -84,7 +85,6 @@ def add():
     locations.append(new_json)
     write()
     print(f'{game} added successfully!')
-    list()
 
 def change(name, save, back):
     #add flag to move previous backups to new directory
@@ -117,22 +117,26 @@ def change(name, save, back):
     #check that at least one is being changed
     write()
     print("Change successful!")
-    list()
     
 def remove(delFiles):
     #remove an entry
     location = locate()
     if(location == False):
         sys.exit(f'{game} entry does not exist!')
-    for x in locations:
-         if(x == location):
-            locations.remove(x)
-    #write()
-    print(f'"Removed entry for {game} with save path {location["savePath"]} and backup path {location["backupPath"]}')
+    locations.remove(location)
+    write()
+    print(f'Removed entry for {game} with save path {location["savePath"]} and backup path {location["backupPath"]}')
     #add option to delete all back ups for a game
     if(delFiles==True):
         #delete all backup files for game name
-        print(f'Removed all files for {game} from {location["backupPath"]}')
+        confirm = input(f'Confirm that all backups for {game} should be deleted (y/n)?')
+        if(confirm.lower()=='y'):
+            shutil.rmtree(location["backupPath"])
+            print(f'Removed all files for {game} from {location["backupPath"]}')
+        else:
+            sys.exit("Removal of backup files aborted!")
+    else:
+        print(f'Please note that backup files have not been deleted and are stored at {location["backupPath"]}')
 
 
 def locate(name = None):
@@ -146,7 +150,7 @@ def locate(name = None):
 
 def write():
     #fill this with open as file, 
-    with open(JSON_NAME, "r+") as file:
+    with open(JSON_NAME, "w") as file:
         file.seek(0)
         json.dump(locations, file, indent=4, separators=(',',':'))
         file.close()
@@ -166,28 +170,30 @@ def save():
         sys.exit(f'{game} paths have not been configured! Exiting...')
     save_path = location["savePath"]
     backup_path = location["backupPath"]
-    folder_name = f'{game}-{datetime.now().strftime("%d-%m-%Y")}'
-    backup = f'{backup_path}/{folder_name}'
+    #name time is folder name
+    # game-day-month-year
+    backup = f'{backup_path}/{nametime}'
     move(save_path, backup)
-    print(f'Saved {game} at {save_path} to {backup_path} in {folder_name}!')
+    print(f'Saved {game} at {save_path} to {backup_path} in {nametime}!')
      
 def load():
     #take files in saved0
     #way to select which backup to load
     print("load not implemented")
     
-def move(save, folder):
-    print(save)
-    if(os.path.exists(folder)):
+def move(source, dest):
+    if(os.path.exists(dest)):
         overwrite = input(f'{game} already has a backup on this date? Overwrite (y/n)?')
         if(overwrite.lower()=='y'):
-            shutil.rmtree(folder)
-            shutil.copytree(save, folder)
+            shutil.rmtree(dest)
+            shutil.copytree(source, dest)
         else:
             sys.exit("Backup aborted!")
     else:
-        shutil.copytree(save, folder)
+        shutil.copytree(source, dest)
         
+def nametime():
+    return f'{game}-{datetime.now().strftime("%d-%m-%Y")}'
             
 def list():
     #list games with defined paths
