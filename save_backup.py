@@ -149,7 +149,9 @@ def locate(name = None):
     return location
 
 def write():
-    #fill this with open as file, 
+    #note that if using r+ or a, it can leave dangling data
+    #as it does not overwrite the file fully, and if json list is smaller
+    #it will leave previous data
     with open(JSON_NAME, "w") as file:
         file.seek(0)
         json.dump(locations, file, indent=4, separators=(',',':'))
