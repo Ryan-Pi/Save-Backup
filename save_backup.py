@@ -210,6 +210,7 @@ def load(deleteBackup, deleteOld):
         sys.exit("Number given is out of range! Exiting...")
     folder = listSaves[fileNum]
     file = f'{backup_path}\{folder}'
+    #add delete all files in save directory option
     move(file, save_path)
     #check dates
     #print list of dates
