@@ -72,13 +72,15 @@ def main():
 def add():
     #use Tuple to save game name, save path, backup path?
     #need to check for duplicate game names!
+    if '-' in game:
+        sys.exit("- is not an allowed character for game names! Exiting...")
     if(next((item for item in locations if item["game"] == game), False)):
         sys.exit(f'{game} already exists!')
     #check paths are valid
     if (os.path.exists(save_path)==False):
-        sys.exit("save path not valid")
+        sys.exit("Save path not valid! Exiting...")
     elif(os.path.exists(backup_path)==False):
-        sys.exit("backup path not valid")
+        sys.exit("Backup path not valid! Exiting...")
     else:
         print("All paths valid!")
     new_json = {
@@ -104,7 +106,10 @@ def change(name, save, back):
         newName = locate(name)
         if(newName == False):
             #checks if an entry for the proposed name change already exists
-            location["game"] = name
+            if("-" in name):
+                print("- is not an allowed character for game names! Name has not been changed")
+            else:
+                location["game"] = name
         else:
             sys.exit(f'{name} has already been configured with save path {newName["savePath"]} and backup path {newName["backupPath"]}')
     if(save != None):
@@ -120,7 +125,7 @@ def change(name, save, back):
     # optional backup change
     #check that at least one is being changed
     write()
-    print("Change successful!")
+    print("Change complete!")
     
 def remove(delFiles):
     #remove an entry
@@ -178,14 +183,14 @@ def save():
     backup_path = location["backupPath"]
     #name time is folder name
     # game-day-month-year
-    backup = f'{backup_path}/{nametime}'
+    backup = f'{backup_path}/{nametime()}'
     move(save_path, backup)
-    print(f'Saved {game} at {save_path} to {backup_path} in {nametime}!')
+    print(f'Saved {game} at {save_path} to {backup_path} in {nametime()}!')
      
 def load():
     #take files in saved0
     #way to select which backup to load
-    print("load not implemented")
+    print(f'{game} backup moved from {backup_path} to {save_path}')
     
 def move(source, dest):
     if(os.path.exists(dest)):
