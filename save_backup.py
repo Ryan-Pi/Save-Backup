@@ -25,9 +25,13 @@ def main():
     global locations
     global empty
     locations = []
-    
+    #check if json file exists and create if it doesnt
     #open json file containing game save paths
-    with open(JSON_NAME, "r") as file:
+    if(os.path.exists(JSON_PATH)!=True):
+        #creates game.json if it doesn't exist
+        open(JSON_PATH, "x")
+        print("games.json not found, creating a new file!")
+    with open(JSON_NAME) as file:
         if(os.stat(JSON_PATH).st_size == 0): 
             #no json
             empty = True
