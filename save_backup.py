@@ -57,7 +57,7 @@ def main():
     elif args.subcommand == 'save':
         save()
     elif args.subcommand == 'load':
-        load()
+        load(args.deletebackup, args.deleteold)
     elif args.subcommand == 'remove':
         remove(args.files)
     if(args.list):
@@ -189,7 +189,7 @@ def save():
     move(save_path, backup)
     print(f'Saved {game} at {save_path} to {backup_path} in {nametime()}!')
      
-def load():
+def load(deleteBackup, deleteOld):
     #take files in saved0
     #way to select which backup to load
     #check backup directory for saves
@@ -214,8 +214,30 @@ def load():
     #check dates
     #print list of dates
     #user input which to load
-    #load
+    #load 
     print(f'{game} backup {folder} copied from {backup_path} to {save_path}')
+    if(deleteBackup):
+        overwrite = input(f'Are you sure you want to delete {folder} for {game} (y/n)?')
+        if(overwrite.lower()=='n'):
+            print("Aborted!")
+        else:
+            delete(file)
+            print(f'Deleted backup {folder}')
+    if(deleteOld):
+        overwrite = input(f'Are you sure you want to delete all backups for {game} except for the latest (y/n)?')
+        if(overwrite.lower()=='n'):
+            print("Aborted!")
+        else:
+            latestFolder = listSaves.pop()
+            for x in listSaves:
+                delete(f'{backup_path}\{x}')
+            print(f'Deleted all backups except for {latestFolder}')
+        
+def delete(file):
+    shutil.rmtree(file)
+    
+def overwrite(text):
+    print()
     
 def move(source, dest):
     if(os.path.exists(dest)):
@@ -269,6 +291,8 @@ def parse_args():
     s_parser.add_argument('-t', '--title', help = 'name backup folder differently')
     
     l_parser = subparsers.add_parser("load", help = 'restore backup to save games')
+    l_parser.add_argument('-db', '--deletebackup', action = "store_true", help = 'delete backup after loading')
+    l_parser.add_argument('-do', '--deleteold', action = "store_true", help = 'delete all old backups and keep the newest backup')
     
     r_parser = subparsers.add_parser("remove", help = 'remove game path')
     r_parser.add_argument('-f', '--files', action= "store_true",help = 'delete all backups')
