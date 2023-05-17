@@ -16,6 +16,7 @@ import json
 JSON_NAME = "games.json"
 JSON_PATH = os.getcwd() + "\\" + JSON_NAME
 
+#TODO move save path and backup path out of main()
 
 def main():
     
@@ -170,19 +171,20 @@ def check():
     location = locate()
     if(location == False):
         sys.exit(f'{game} paths have not been configured! Exiting...')
+    global save_path
     save_path = location["savePath"]
+    if(os.path.exists(save_path)==False):
+        sys.exit("Save path not valid! Exiting...")
+    global backup_path
     backup_path = location["backupPath"]
+    if(os.path.exists(backup_path)==False):
+        sys.exit("Backup path not valid! Exiting...")
     
 def save():
     #create a folder in specified directory, named game name + date time saved
-    #check()
-    location = locate()
-    if(location == False):
-        sys.exit(f'{game} paths have not been configured! Exiting...')
-    save_path = location["savePath"]
-    backup_path = location["backupPath"]
+    check()
     #name time is folder name
-    # game-day-month-year
+    # game-year-month-day
     backup = f'{backup_path}/{nametime()}'
     move(save_path, backup)
     print(f'Saved {game} at {save_path} to {backup_path} in {nametime()}!')
@@ -190,21 +192,55 @@ def save():
 def load():
     #take files in saved0
     #way to select which backup to load
-    print(f'{game} backup moved from {backup_path} to {save_path}')
+    #check backup directory for saves
+    check()
+    directory = os.listdir(backup_path)
+    listSaves = []
+    for x in directory:
+        if(x.startswith(f'{game}-')==True):
+            print(x)
+            listSaves.append(x)
+    print("List of backups in the configured backup folder")
+    count = 0
+    for x in listSaves:
+        print(f'{count}: {x}')
+        count += 1
+    fileNum = int(input("Please select which backup you would like to load:"))
+    if(fileNum >= len(listSaves)):
+        sys.exit("Number given is out of range! Exiting...")
+    folder = listSaves[fileNum]
+    file = f'{backup_path}\{folder}'
+    move(file, save_path)
+    #check dates
+    #print list of dates
+    #user input which to load
+    #load
+    print(f'{game} backup {folder} copied from {backup_path} to {save_path}')
     
 def move(source, dest):
     if(os.path.exists(dest)):
-        overwrite = input(f'{game} already has a backup on this date? Overwrite (y/n)?')
-        if(overwrite.lower()=='y'):
-            shutil.rmtree(dest)
-            shutil.copytree(source, dest)
+        #check if it is copying file from save to backup folder
+        if(source == save_path):
+            overwrite = input(f'{game} already has a backup on this date? Overwrite (y/n)?')
+            #check lowercase in case a capital Y or N is input
+            if(overwrite.lower()=='y'):
+                shutil.rmtree(dest)
+                shutil.copytree(source, dest)
+            else:
+                sys.exit("Backup aborted!")
         else:
-            sys.exit("Backup aborted!")
+            overwrite = input(f'Are you sure you want to load a backup from {source} to {dest} (y/n)?')
+            if(overwrite.lower() == 'y'):
+                #copytree default dirs_exist_ok == False
+                shutil.copytree(source, dest, dirs_exist_ok=True)
+            else:
+                sys.exit("Aborting!")
     else:
         shutil.copytree(source, dest)
         
 def nametime():
-    return f'{game}-{datetime.now().strftime("%d-%m-%Y")}'
+    #game name - year - month - day
+    return f'{game}-{datetime.now().strftime("%Y-%m-%d")}'
             
 def list():
     #list games with defined paths
