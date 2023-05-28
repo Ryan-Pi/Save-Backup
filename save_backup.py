@@ -236,7 +236,8 @@ def load(deleteBackup, deleteOld):
         
 def delete(file):
     shutil.rmtree(file)
-    
+
+# TODO: replace overwrite prompt code    
 def overwrite(text):
     print()
     
@@ -288,6 +289,7 @@ def parse_args():
     c_parser.add_argument('-sp','--savepath')
     c_parser.add_argument('-bp','--backup')
     
+    ## TODO: implement title
     s_parser = subparsers.add_parser("save", help = 'backup save game')
     s_parser.add_argument('-t', '--title', help = 'name backup folder differently')
     

@@ -18,5 +18,15 @@
         "game":"testgame33",
         "savePath":"testsave",
         "backupPath":"testbu"
+    },
+    {
+        "game":"testgame52",
+        "savePath":"G:\\sta",
+        "backupPath":"G:\\Test Backup"
+    },
+    {
+        "game":"testgame532",
+        "savePath":"G:\\sta",
+        "backupPath":"G:\\Test Backup"
     }
 ]
