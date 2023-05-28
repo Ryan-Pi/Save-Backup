@@ -2,7 +2,7 @@
 
 ## Summary
 
-Python CLI script built to backup local files from one folder to another folder, and to restore backups to specified save locations.
+Python CLI script built to backup local files from one folder to another folder, and to restore backups to specified save locations. File locations are saved in a json file, which stores a json object that contains the name of a file location, the location of the files (save path) and where the files should be backed up to. Files in the save location will be saved in a folder at the specified backup path in a name-yy-mm-dd format by default.
 
 Primarily built as a way to practice Python and to learn more about some common modules used in python as well as file i/o operations, json module and the use of the argparse module.
 
